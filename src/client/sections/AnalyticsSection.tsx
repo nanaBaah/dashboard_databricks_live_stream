@@ -64,7 +64,7 @@ export function AnalyticsSection() {
       </h2>
 
       {!latest ? (
-        <p style={{ color: "hsl(var(--muted-foreground))", fontSize: "0.85rem" }}>
+        <p style={{ color: "var(--ink-3)", fontSize: "0.85rem" }}>
           {status === "connecting" ? "Loading…" : "(no rows)"}
         </p>
       ) : (
@@ -78,7 +78,7 @@ export function AnalyticsSection() {
                     style={{
                       textAlign: "left",
                       padding: "0.4rem 0.6rem",
-                      borderBottom: "2px solid hsl(var(--border))",
+                      borderBottom: "2px solid var(--line)",
                       whiteSpace: "nowrap",
                     }}
                   >
@@ -94,7 +94,7 @@ export function AnalyticsSection() {
                     key={c}
                     style={{
                       padding: "0.35rem 0.6rem",
-                      borderBottom: "1px solid hsl(var(--border))",
+                      borderBottom: "1px solid var(--line)",
                       whiteSpace: "nowrap",
                       fontVariantNumeric: "tabular-nums",
                     }}

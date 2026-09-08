@@ -17,27 +17,8 @@
 
 import type { Application, Request, Response } from "express";
 
-/**
- * Minimal interface for the analytics executor exposed by the AppKit
- * `analytics` plugin (`appKit.analytics.query(...)`). Typed here so we don't
- * take a hard dependency on internal AppKit generics.
- */
-interface AnalyticsExecutor {
-  query: (sql: string) => Promise<unknown>;
-}
-
-/**
- * Fully-qualified UC table name. Configurable so the same bundle works
- * against dev/prod catalogs, and validated to prevent SQL injection since
- * we interpolate it directly into the query text.
- */
-const UC_TABLE = (() => {
-  const raw = process.env.UC_TABLE ?? "dev_hysbox.telemetry.kr_intraday_public_trades_live_test";
-  if (!/^[a-z_][a-z0-9_]*(\.[a-z_][a-z0-9_]*){0,2}$/i.test(raw)) {
-    throw new Error(`UC_TABLE is not a valid Unity Catalog identifier: "${raw}"`);
-  }
-  return raw;
-})();
+import { UC_TABLE } from "./config.js";
+import type { AnalyticsExecutor, AnalyticsResult } from "./types.js";
 
 const LATEST_UC_QUERY = `
   SELECT
@@ -52,16 +33,6 @@ const LATEST_UC_QUERY = `
 `;
 
 const COUNT_UC_QUERY = `SELECT COUNT(*) AS count FROM ${UC_TABLE}`;
-
-/** Shape of a single row returned by AppKit's analytics executor. */
-interface AnalyticsRow {
-  [column: string]: unknown;
-}
-
-/** Shape of the `.result` object returned by `appKit.analytics.query(...)`. */
-interface AnalyticsResult {
-  data?: AnalyticsRow[];
-}
 
 /**
  * Register the UC routes on the Express app.

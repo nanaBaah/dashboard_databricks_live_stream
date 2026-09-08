@@ -9,16 +9,17 @@
  *   - `lakebase`  — pg.Pool → Lakebase Autoscaling (OAuth auto-refresh).
  *
  * Custom routes registered in `onPluginsReady` (after all plugins initialise):
- *   - GET /api/trades         — recent Lakebase rows + total count
- *   - GET /api/trades/latest  — single most-recent Lakebase row
- *   - GET /api/trades/count   — total Lakebase row count
- *   - GET /api/uc/latest      — latest UC row via SQL Warehouse
- *   - GET /api/uc/count       — total UC row count via SQL Warehouse
+ *   - GET /api/monitor/overview   — every dashboard panel for one filter set,
+ *                                   routed across the Lakebase/Delta boundary
+ *   - GET /api/monitor/dimensions — filter-dropdown options for a traded range
+ *   - GET /api/monitor/health     — pipeline freshness for the header dot
+ *   - GET /api/trades[…]          — raw Lakebase rows (diagnostics panel)
+ *   - GET /api/uc/[…]             — raw UC rows via SQL Warehouse (diagnostics)
  *
  * The React client polls these endpoints on a short interval (see
- * `src/client/hooks/useLakebaseTrades.ts` and `useUcTable.ts`). Long-lived
- * SSE connections were removed because they proved unreliable through the
- * Databricks Apps proxy and Lakebase Autoscaling cold-start path.
+ * `src/client/monitor/useMonitor.ts`). Long-lived SSE connections were removed
+ * because they proved unreliable through the Databricks Apps proxy and the
+ * Lakebase Autoscaling cold-start path.
  *
  * Docs:
  *   - Apps overview:          https://developers.databricks.com/docs/apps/overview
@@ -29,6 +30,7 @@
 import { analytics, createApp, lakebase, server } from "@databricks/appkit";
 
 import { registerLakebaseRoutes } from "./lakebase_routes.js";
+import { registerMonitorRoutes } from "./monitor/routes.js";
 import { registerUcRoutes } from "./uc_routes.js";
 
 console.log("[startup] env:", {
@@ -82,8 +84,11 @@ await createApp({
       // appKit.analytics.query executes SQL against the Serverless SQL
       // Warehouse using the service principal's credentials (no SSE).
       registerUcRoutes(app, appKit.analytics);
+      // The dashboard routes need both surfaces: the planner picks Lakebase,
+      // the warehouse, or both, from the requested traded time range.
+      registerMonitorRoutes(app, { pool: appKit.lakebase.pool, analytics: appKit.analytics });
     });
   },
 });
 
-console.log("Telemetry Dashboard started (polling mode; no SSE).");
+console.log("Intraday Public Trades — Live Monitor started (polling mode; no SSE).");

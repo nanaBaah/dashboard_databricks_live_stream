@@ -93,7 +93,7 @@ export function LiveTradesSection({
 
       {/* ── Recent-trades table ────────────────────────────── */}
       {trades.length === 0 ? (
-        <p style={{ color: "hsl(var(--muted-foreground))", fontSize: "0.85rem" }}>
+        <p style={{ color: "var(--ink-3)", fontSize: "0.85rem" }}>
           {status === "connecting" ? "Loading trades…" : "No trades in the current window."}
         </p>
       ) : (
@@ -107,7 +107,7 @@ export function LiveTradesSection({
                     style={{
                       textAlign: "left",
                       padding: "0.35rem 0.6rem",
-                      borderBottom: "2px solid hsl(var(--border))",
+                      borderBottom: "2px solid var(--line)",
                       whiteSpace: "nowrap",
                     }}
                   >
@@ -124,7 +124,7 @@ export function LiveTradesSection({
                       key={col}
                       style={{
                         padding: "0.3rem 0.6rem",
-                        borderBottom: "1px solid hsl(var(--border))",
+                        borderBottom: "1px solid var(--line)",
                         whiteSpace: "nowrap",
                         fontVariantNumeric: "tabular-nums",
                       }}
@@ -147,9 +147,9 @@ function KpiCard({ label, value }: { label: string; value: string }) {
     <div
       style={{
         padding: "0.75rem 1rem",
-        border: "1px solid hsl(var(--border))",
+        border: "1px solid var(--line)",
         borderRadius: 8,
-        background: "hsl(var(--card))",
+        background: "var(--panel)",
       }}
     >
       <div
@@ -157,7 +157,7 @@ function KpiCard({ label, value }: { label: string; value: string }) {
           fontSize: "0.7rem",
           textTransform: "uppercase",
           letterSpacing: "0.05em",
-          color: "hsl(var(--muted-foreground))",
+          color: "var(--ink-3)",
           marginBottom: "0.25rem",
         }}
       >

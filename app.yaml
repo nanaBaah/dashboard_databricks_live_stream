@@ -40,3 +40,26 @@ env:
     value: '5432'
   - name: TELEMETRY_SCHEMA
     value: public
+  # ---- Dashboard data sources -------------------------------------------
+  # The live 48 h buffer (Postgres) and the unbounded history (Delta/UC). The
+  # dashboard reads the same logical table from both and splits any traded
+  # time range between them; see src/server/monitor/plan.ts.
+  - name: LAKEBASE_TABLE
+    value: trades_latest
+  - name: UC_TABLE
+    value: dev_hysbox.telemetry.kr_intraday_public_trades_live_test
+  # Size of the Lakebase FIFO buffer, and the margin shaved off its edge before
+  # a query is routed to Postgres rather than Delta. Keep in step with the
+  # retention job's window.
+  - name: LAKEBASE_BUFFER_HOURS
+    value: '48'
+  - name: LAKEBASE_BUFFER_SAFETY_MINUTES
+    value: '60'
+  # Header freshness dot: lagging above the first, stale above the second.
+  - name: FRESHNESS_LAGGING_SECONDS
+    value: '30'
+  - name: FRESHNESS_STALE_SECONDS
+    value: '120'
+  # Widest traded time range the dashboard will accept, in days.
+  - name: MONITOR_MAX_RANGE_DAYS
+    value: '90'

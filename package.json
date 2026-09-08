@@ -14,6 +14,7 @@
     "build:client": "vite build",
     "build:server": "tsdown",
     "start": "node server_bundle/index.js",
+    "test": "tsx scripts/check_monitor_logic.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "deploy:dev": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./deploy-dev.ps1",
