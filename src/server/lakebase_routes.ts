@@ -16,8 +16,10 @@
  * Lakebase pool. The pool refreshes its OAuth token automatically.
  */
 
-import type { Application, Request, Response } from "express";
 import type { LakebasePool } from "@databricks/appkit";
+import type { Application, Request, Response } from "express";
+
+import { LAKEBASE_FQN } from "./config.js";
 
 /** Default number of recent rows returned by `GET /api/trades`. */
 const DEFAULT_RECENT_LIMIT = 10;
@@ -25,31 +27,16 @@ const DEFAULT_RECENT_LIMIT = 10;
 /** Absolute upper bound on `?limit=` to keep responses small. */
 const MAX_RECENT_LIMIT = 100;
 
-/**
- * Postgres schema that holds `trades_latest`. Sourced from the env so the same
- * bundle works against different Lakebase projects without a rebuild.
- *
- * Validated against a safe identifier pattern at startup so an env typo fails
- * loudly rather than silently producing a bad query.
- */
-const SCHEMA = (() => {
-  const raw = process.env.TELEMETRY_SCHEMA ?? "public";
-  if (!/^[a-z][a-z0-9_]{0,62}$/.test(raw)) {
-    throw new Error(`TELEMETRY_SCHEMA is not a valid PostgreSQL identifier: "${raw}"`);
-  }
-  return raw;
-})();
-
-const COUNT_QUERY = `SELECT COUNT(*)::bigint AS count FROM ${SCHEMA}.trades_latest`;
+const COUNT_QUERY = `SELECT COUNT(*)::bigint AS count FROM ${LAKEBASE_FQN}`;
 const RECENT_QUERY = `
   SELECT *
-  FROM ${SCHEMA}.trades_latest
+  FROM ${LAKEBASE_FQN}
   ORDER BY ingestion_timestamp DESC
   LIMIT $1
 `;
 const LATEST_QUERY = `
   SELECT *
-  FROM ${SCHEMA}.trades_latest
+  FROM ${LAKEBASE_FQN}
   ORDER BY ingestion_timestamp DESC
   LIMIT 1
 `;
