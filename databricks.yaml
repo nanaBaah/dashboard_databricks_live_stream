@@ -1,0 +1,33 @@
+---
+bundle:
+  name: telemetry-dashboard-appkit
+resources:
+  apps:
+    telemetry-dashboard-appkit:
+      name: telemetry-dashboard-appkit
+      source_code_path: .
+      resources:
+        - name: sql-warehouse
+          sql_warehouse:
+            id: 2027c055b4ffee7c
+            permission: CAN_USE
+        - name: postgres
+          postgres:
+            branch: ${var.postgres_branch}
+            database: ${var.postgres_database}
+            permission: CAN_CONNECT_AND_CREATE
+variables:
+  postgres_branch:
+    description: 'Full Lakebase Postgres branch resource name. Obtain with: databricks
+      postgres list-branches {project-name}'
+  postgres_database:
+    description: 'Full Lakebase Postgres database resource name. Obtain with: databricks
+      postgres list-databases {branch-name}'
+targets:
+  default:
+    default: true
+    workspace:
+      host: https://adb-2708830887471364.4.azuredatabricks.net
+    variables:
+      postgres_branch: projects/hydro-telemetry-live-test/branches/production
+      postgres_database: projects/hydro-telemetry-live-test/branches/production/databases/databricks-postgres

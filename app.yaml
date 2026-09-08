@@ -1,0 +1,42 @@
+---
+# Databricks Apps runtime configuration for the Telemetry Dashboard (AppKit).
+#
+# Docs:
+#   Apps overview       -> https://developers.databricks.com/docs/apps/overview
+#   Analytical reads    -> https://developers.databricks.com/docs/lakehouse/analytical-reads
+#   Analytics plugin    -> https://developers.databricks.com/docs/appkit/v0/plugins/analytics
+#
+# The app runs serverless on a Premium workspace and is assigned a dedicated
+# service principal; Databricks injects its OAuth credentials at runtime, so no
+# tokens live in code.
+#
+# The app is shipped PRE-BUILT: `client_bundle/` (Vite client) and
+# `server_bundle/index.js` (tsdown server bundle) are uploaded with the source,
+# so the Apps runtime does not build.  `.npmrc` sets `omit=dev` so the platform
+# installs only runtime deps — the heavy build toolchain never runs on the
+# platform.  The client bundle is served from `client_bundle/` by the AppKit
+# server (staticPath).
+command:
+  - node
+  - server_bundle/index.js
+env:
+  # Serverless SQL Warehouse for the analytics plugin.
+  - name: DATABRICKS_WAREHOUSE_ID
+    valueFrom: sql-warehouse
+  # Lakebase Autoscaling — static values because the Apps `database` resource
+  # type only supports the old Provisioned tier, not Autoscaling projects.
+  # PGHOST / PGDATABASE / PGSSLMODE are the endpoint connection details;
+  # LAKEBASE_ENDPOINT is the resource path used by the AppKit lakebase plugin
+  # for OAuth token generation.
+  - name: LAKEBASE_ENDPOINT
+    value: projects/hydro-telemetry-live-test/branches/production/endpoints/primary
+  - name: PGHOST
+    value: ep-wild-shadow-e22jar0r.database.westeurope.azuredatabricks.net
+  - name: PGDATABASE
+    value: databricks_postgres
+  - name: PGSSLMODE
+    value: require
+  - name: PGPORT
+    value: '5432'
+  - name: TELEMETRY_SCHEMA
+    value: public

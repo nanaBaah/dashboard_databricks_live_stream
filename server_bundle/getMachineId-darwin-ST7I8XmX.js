@@ -1,0 +1,2 @@
+import{a as e,t}from"./chunk-BjEoQXZ0.js";import{n,t as r}from"./esm-DWiFK7W1.js";import{t as i}from"./execAsync-CPR512EA.js";var a=t((t=>{Object.defineProperty(t,`__esModule`,{value:!0}),t.getMachineId=void 0;let a=i(),o=(n(),e(r));async function s(){try{let e=(await(0,a.execAsync)(`ioreg -rd1 -c "IOPlatformExpertDevice"`)).stdout.split(`
+`).find(e=>e.includes(`IOPlatformUUID`));if(!e)return;let t=e.split(`" = "`);if(t.length===2)return t[1].slice(0,-1)}catch(e){o.diag.debug(`error reading machine id: ${e}`)}}t.getMachineId=s}));export default a();export{};
